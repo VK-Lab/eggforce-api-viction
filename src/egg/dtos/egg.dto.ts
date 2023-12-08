@@ -2,13 +2,13 @@ import { Expose, Type } from 'class-transformer';
 
 class EggMetadataDto {
   @Expose()
-  class: string;
+  Class: string;
   @Expose()
-  level: string;
+  Level: string;
   @Expose()
-  image: string;
+  token_uri: string;
   @Expose()
-  creationYear: string;
+  'Year of creation': string;
 }
 
 export class EggDto {
@@ -19,8 +19,12 @@ export class EggDto {
   @Expose()
   status: string;
   @Expose()
-  stakedAmount: number;
+  stakedAmount: string;
   @Expose()
   @Type(() => EggMetadataDto)
   metadata: EggMetadataDto;
+  @Expose()
+  contractAddress: string;
+  @Expose()
+  nextLevelXp: number;
 }

@@ -56,20 +56,29 @@ export class EggService {
       egg = await this.eggModel.create({
         tokenId: tokenId,
         owner,
+        contractAddress: this.configService.get<string>('NFT_CONTRACT_ADDRESS'),
         metadata: {
-          class: eggClass,
-          level: 'rock',
-          image: `https://assets.eggforce.io/egg/${eggClass.toLowerCase()}-rock.png`,
-          creationYear: '2023',
+          Class: eggClass,
+          Level: 'rock',
+          token_uri: `https://assets.eggforce.io/egg/${eggClass.toLowerCase()}-rock.png`,
+          ['Year of creation']: '2023',
         },
       });
-      await egg.save();
     }
     return egg;
   }
 
-  async getEggsByOwner(owner: string) {
-    return await this.eggModel.find({ owner: owner }).exec();
+  async getEggsByOwner(owner: string, page, limit) {
+    return await this.eggModel
+      .find({ owner: owner })
+      .sort({ tokenId: -1 })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
+  }
+
+  async countEggsByOwner(owner: string) {
+    return this.eggModel.countDocuments({ owner: owner });
   }
 
   async incubate(tokenId: string, txHash: Hash) {
@@ -95,7 +104,10 @@ export class EggService {
     if (egg.status !== 'incubating') {
       egg.status = 'incubating';
     }
-    egg.cap = (BigInt(egg.cap) + event.args['_cap']).toString();
+    egg.stakedAmount = (
+      BigInt(egg.stakedAmount) + event.args['_cap']
+    ).toString();
+    egg.validator = event.args['_candidate'];
     egg.hashes.push(txHash);
     await egg.save();
     return egg;
@@ -125,7 +137,8 @@ export class EggService {
       ],
     });
     egg.status = 'stop';
-    egg.cap = '0';
+    egg.stakedAmount = '0';
+    egg.validator = '';
     egg.hashes.push(txHash);
     await egg.save();
     return egg;
@@ -170,12 +183,12 @@ export class EggService {
       if (!eggs.length) {
         continue;
       }
-      const totalCap = eggs.reduce(
-        (total, egg) => total + BigInt(egg.cap),
+      const totalStakedAmount = eggs.reduce(
+        (total, egg) => total + BigInt(egg.stakedAmount),
         BigInt(0),
       );
       // Get on-chain cap
-      const onchainCap = await this.publicClient.readContract({
+      const stakedAmountOnchain = await this.publicClient.readContract({
         address: this.configService.get<string>(
           'VALIDATOR_CONTRACT',
         ) as Address,
@@ -185,8 +198,9 @@ export class EggService {
         functionName: 'getVoterCap',
         args: [reward.validator, reward.address],
       });
-      if (totalCap < onchainCap) {
-        const rewardAmount = (BigInt(reward.reward) * totalCap) / onchainCap;
+      if (totalStakedAmount < stakedAmountOnchain) {
+        const rewardAmount =
+          (BigInt(reward.reward) * totalStakedAmount) / stakedAmountOnchain;
         await this.userService.increaseSnc(reward.address, rewardAmount);
       }
     }
