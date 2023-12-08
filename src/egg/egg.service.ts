@@ -3,8 +3,6 @@ import {
   Injectable,
   NotFoundException,
   Logger,
-  forwardRef,
-  Inject,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Egg } from './schemas/egg.schema';
@@ -133,7 +131,8 @@ export class EggService {
     return egg;
   }
 
-  @Cron('*/10 * * * * *')
+  // Run every 30 minutes
+  @Cron('*/30 * * * *')
   private async handleEggRewards() {
     const response = await axios.get('/epoch/list?limit=1&offset=1');
     if (response.status !== 200) {

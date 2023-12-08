@@ -14,4 +14,17 @@ export class UserService {
     user.snc = (BigInt(user.snc) + snc).toString();
     return user.save();
   }
+
+  async getUser(publicKey: string) {
+    const user = await this.userModel.findOne({ publicKey });
+    if (!user) {
+      return new this.userModel({
+        publicKey,
+        snc: '0',
+        pendingSnc: '0',
+      });
+    }
+
+    return user;
+  }
 }

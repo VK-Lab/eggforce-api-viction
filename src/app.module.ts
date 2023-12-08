@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EggModule } from './egg/egg.module';
 import { UserModule } from './user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ValidatorModule } from './validator/validator.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     EggModule,
     UserModule,
+    ValidatorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
