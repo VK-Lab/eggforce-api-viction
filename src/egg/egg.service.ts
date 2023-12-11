@@ -70,7 +70,7 @@ export class EggService {
     return egg;
   }
 
-  async getEggsByOwner(owner: string, page, limit) {
+  async getEggsByOwner(owner: string, page: number, limit: number) {
     return await this.eggModel
       .find({ owner: owner })
       .sort({ tokenId: -1 })

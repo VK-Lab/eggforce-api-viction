@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { EggService } from './egg.service';
-import { Serialize } from '../interceptors/serialize.interceptor';
 import { EggDto } from './dtos/egg.dto';
+import { Serialize } from '../interceptors/serialize.interceptor';
 import { Hash } from 'viem';
 
 @Controller('egg')
@@ -10,6 +10,22 @@ export class EggController {
   @Get('metadata/:id')
   getEggMetadata(@Param('id') id: string) {
     return this.eggService.getEggMetadata(id);
+  }
+
+  @Get('/summary')
+  async getEggSummary(@Query('publicKey') publicKey: string) {
+    const eggs = await this.eggService.getEggsByOwner(publicKey, 1, 0);
+    const countByClass = eggs.reduce(
+      (acc, egg) => {
+        acc[egg.metadata.Class] = (acc[egg.metadata.Class] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    return {
+      classes: countByClass,
+    };
   }
 
   @Post(':id/incubate')
