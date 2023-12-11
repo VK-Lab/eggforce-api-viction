@@ -27,6 +27,9 @@ export class Egg {
   tokenId: string;
 
   @Prop()
+  name: string;
+
+  @Prop()
   owner: string;
 
   @Prop()

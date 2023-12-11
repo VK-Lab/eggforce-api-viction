@@ -58,9 +58,10 @@ export class EggService {
         tokenId: tokenId,
         owner,
         contractAddress: this.configService.get<string>('NFT_CONTRACT_ADDRESS'),
+        name: 'eggforce_nft',
         metadata: {
           Class: eggClass,
-          Level: 'rock',
+          Level: 'Rock',
           token_uri: `https://assets.eggforce.io/egg/${eggClass.toLowerCase()}-rock.png`,
           ['Year of creation']: '2023',
           XP: '0',
