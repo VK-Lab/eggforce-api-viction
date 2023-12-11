@@ -11,6 +11,7 @@ import {
   Address,
   createPublicClient,
   decodeEventLog,
+  formatEther,
   Hash,
   http,
   parseAbi,
@@ -62,6 +63,7 @@ export class EggService {
           Level: 'rock',
           token_uri: `https://assets.eggforce.io/egg/${eggClass.toLowerCase()}-rock.png`,
           ['Year of creation']: '2023',
+          XP: '0',
         },
       });
     }
@@ -142,6 +144,41 @@ export class EggService {
     egg.hashes.push(txHash);
     await egg.save();
     return egg;
+  }
+
+  async claim(tokenId: string, snc: bigint) {
+    const egg = await this.eggModel.findOne({ tokenId: tokenId }).exec();
+    if (!egg) {
+      throw new NotFoundException(`Egg #${tokenId} not found`);
+    }
+    const user = await this.userService.getUser(egg.owner);
+    if (BigInt(user.snc) < snc) {
+      throw new BadRequestException(`Insufficient SNC`);
+    }
+    await this.userService.lockSnc(egg.owner, snc);
+    const xp = parseInt(egg.metadata.XP) + parseInt(formatEther(snc));
+
+    egg.metadata.XP = xp.toString();
+    egg.metadata.Level = this.getLevelName(xp);
+    egg.metadata.token_uri = `https://assets.eggforce.io/egg/${egg.metadata.Class.toLowerCase()}-${egg.metadata.Level.toLowerCase()}.png`;
+
+    await this.userService.confirmSnc(egg.owner, snc);
+
+    return egg.save();
+  }
+
+  private getLevelName(xp: number) {
+    const lvl = Math.floor(Math.cbrt((xp + 12) / 12));
+    switch (lvl) {
+      case 1:
+        return 'Rock';
+      case 2:
+        return 'Silver';
+      case 3:
+        return 'Gold';
+      default:
+        return 'Platinum';
+    }
   }
 
   // Run every 30 minutes

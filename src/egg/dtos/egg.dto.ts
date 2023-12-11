@@ -9,6 +9,8 @@ class EggMetadataDto {
   token_uri: string;
   @Expose()
   'Year of creation': string;
+  @Expose()
+  XP: string;
 }
 
 export class EggDto {

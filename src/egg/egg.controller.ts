@@ -23,4 +23,10 @@ export class EggController {
   stop(@Param('id') id: string, @Body('txHash') txHash: Hash) {
     return this.eggService.stop(id, txHash);
   }
+
+  @Post(':id/claim')
+  @Serialize(EggDto)
+  claim(@Param('id') id: string, @Body('snc') snc: string) {
+    return this.eggService.claim(id, BigInt(snc));
+  }
 }
