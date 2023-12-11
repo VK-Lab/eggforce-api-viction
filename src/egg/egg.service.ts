@@ -235,11 +235,11 @@ export class EggService {
         functionName: 'getVoterCap',
         args: [reward.validator, reward.address],
       });
+      let rewardAmount = BigInt(reward.reward);
       if (totalStakedAmount < stakedAmountOnchain) {
-        const rewardAmount =
-          (BigInt(reward.reward) * totalStakedAmount) / stakedAmountOnchain;
-        await this.userService.increaseSnc(reward.address, rewardAmount);
+        rewardAmount = (rewardAmount * totalStakedAmount) / stakedAmountOnchain;
       }
+      await this.userService.increaseSnc(reward.address, rewardAmount);
     }
   }
 }
