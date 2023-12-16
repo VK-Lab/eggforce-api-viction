@@ -17,4 +17,6 @@ export class ValidatorDto {
   logoUrl: string;
   @Expose()
   position: PositionDto;
+  @Expose()
+  isActiveValidator: boolean;
 }

@@ -185,7 +185,9 @@ export class EggService {
   // Run every 30 minutes
   @Cron('*/30 * * * *')
   private async handleEggRewards() {
-    const response = await axios.get('/epoch/list?limit=1&offset=1');
+    const response = await axios.get('/epoch/list?limit=1&offset=1', {
+      baseURL: this.configService.get<string>('SCAN_API_BASE_URI'),
+    });
     if (response.status !== 200) {
       this.logger.error('Failed to get epoch list');
       return;
@@ -207,7 +209,9 @@ export class EggService {
   }
 
   private async calculateEggRewards(epoch: number) {
-    const response = await axios.get(`/epoch/${epoch}/reward`);
+    const response = await axios.get(`/epoch/${epoch}/reward`, {
+      baseURL: this.configService.get<string>('SCAN_API_BASE_URI'),
+    });
     if (response.status !== 200) {
       this.logger.error(`Failed to get epoch ${epoch} rewards`);
       return;
