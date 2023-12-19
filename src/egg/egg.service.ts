@@ -17,7 +17,7 @@ import {
   parseAbi,
   PublicClient,
 } from 'viem';
-import { victionTestnet } from '../chain/victionTesnet';
+import { tomoTestnet } from '../chain/tomoTestnet';
 import { Cron } from '@nestjs/schedule';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
@@ -35,7 +35,7 @@ export class EggService {
     private userService: UserService,
   ) {
     this.publicClient = createPublicClient({
-      chain: victionTestnet,
+      chain: tomoTestnet,
       transport: http(),
     });
     axios.defaults.baseURL = configService.get<string>('SCAN_API_BASE_URI');
@@ -209,9 +209,12 @@ export class EggService {
   }
 
   private async calculateEggRewards(epoch: number) {
-    const response = await axios.get(`/epoch/${epoch}/reward`, {
-      baseURL: this.configService.get<string>('SCAN_API_BASE_URI'),
-    });
+    const response = await axios.get(
+      `/epoch/${epoch}/reward?rewardType=voter&limit=100`,
+      {
+        baseURL: this.configService.get<string>('SCAN_API_BASE_URI'),
+      },
+    );
     if (response.status !== 200) {
       this.logger.error(`Failed to get epoch ${epoch} rewards`);
       return;

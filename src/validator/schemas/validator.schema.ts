@@ -26,6 +26,9 @@ export class Validator {
 
   @Prop()
   position: Position;
+
+  @Prop()
+  isActiveValidator: boolean;
 }
 
 export const ValidatorSchema = SchemaFactory.createForClass(Validator);
