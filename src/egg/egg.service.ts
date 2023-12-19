@@ -161,7 +161,8 @@ export class EggService {
 
     egg.metadata.XP = xp.toString();
     egg.metadata.Level = this.getLevelName(xp);
-    egg.metadata.token_uri = `https://assets.eggforce.io/egg/${egg.metadata.Class.toLowerCase()}-${egg.metadata.Level.toLowerCase()}.png`;
+    const extension = egg.metadata.Level === 'Platinum' ? 'gif' : 'png';
+    egg.metadata.token_uri = `https://assets.eggforce.io/egg/${egg.metadata.Class.toLowerCase()}-${egg.metadata.Level.toLowerCase()}.${extension}`;
 
     await this.userService.confirmSnc(egg.owner, snc);
 
