@@ -29,4 +29,6 @@ export class EggDto {
   contractAddress: string;
   @Expose()
   nextLevelXp: number;
+  @Expose()
+  validator: string;
 }

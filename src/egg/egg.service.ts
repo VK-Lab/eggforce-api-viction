@@ -108,7 +108,7 @@ export class EggService {
       egg.status = 'incubating';
     }
     egg.stakedAmount = (
-      BigInt(egg.stakedAmount) + event.args['_cap']
+      BigInt(egg.stakedAmount ?? 0) + event.args['_cap']
     ).toString();
     egg.validator = event.args['_candidate'];
     egg.hashes.push(txHash);

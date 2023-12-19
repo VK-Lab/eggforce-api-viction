@@ -35,7 +35,9 @@ export class Egg {
   @Prop()
   status: string;
 
-  @Prop()
+  @Prop({
+    default: '0',
+  })
   stakedAmount: string;
 
   @Prop()
