@@ -30,6 +30,9 @@ export class Egg {
   name: string;
 
   @Prop()
+  contractName: string;
+
+  @Prop()
   owner: string;
 
   @Prop()

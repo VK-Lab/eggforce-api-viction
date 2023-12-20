@@ -16,9 +16,23 @@ export class UserController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 0,
   ) {
+    const eggs = await this.eggService.getEggsByOwner(publicKey, page, limit);
+    const nfts = eggs.map((egg) => ({
+      tokenId: egg.tokenId,
+      owner: egg.owner,
+      contractAddress: egg.contractAddress,
+      contractName: egg.contractName,
+      name: egg.name,
+      egg: {
+        status: egg.status,
+        stakedAmount: egg.stakedAmount,
+        validator: egg.validator,
+        nextLevelXp: egg.nextLevelXp,
+      },
+    }));
     const itemCount = await this.eggService.countEggsByOwner(publicKey);
     return {
-      nfts: await this.eggService.getEggsByOwner(publicKey, page, limit),
+      nfts,
       itemCount,
       pageCount: Math.ceil(itemCount / limit),
     };

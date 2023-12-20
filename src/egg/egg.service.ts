@@ -59,6 +59,7 @@ export class EggService {
         owner,
         contractAddress: this.configService.get<string>('NFT_CONTRACT_ADDRESS'),
         name: 'eggforce_nft',
+        contractName: 'Eggforce NFT',
         metadata: {
           Class: eggClass,
           Level: 'Rock',
