@@ -23,6 +23,7 @@ export class UserController {
       contractAddress: egg.contractAddress,
       contractName: egg.contractName,
       name: egg.name,
+      metadata: egg.metadata,
       egg: {
         status: egg.status,
         stakedAmount: egg.stakedAmount,
