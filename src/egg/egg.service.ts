@@ -17,12 +17,12 @@ import {
   parseAbi,
   PublicClient,
 } from 'viem';
-import { tomoTestnet } from '../chain/tomoTestnet';
 import { Cron } from '@nestjs/schedule';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Epoch } from './schemas/epoch.schema';
 import { UserService } from '../user/user.service';
+import { victionTestnet } from '../chain/victionTesnet';
 
 @Injectable()
 export class EggService {
@@ -35,7 +35,7 @@ export class EggService {
     private userService: UserService,
   ) {
     this.publicClient = createPublicClient({
-      chain: tomoTestnet,
+      chain: victionTestnet,
       transport: http(),
     });
     axios.defaults.baseURL = configService.get<string>('SCAN_API_BASE_URI');

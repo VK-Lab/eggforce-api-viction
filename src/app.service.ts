@@ -1,19 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { Address, createPublicClient, http, PublicClient } from 'viem';
+import { Injectable, Logger } from '@nestjs/common';
+import { Address, createPublicClient, PublicClient, webSocket } from 'viem';
 import { ConfigService } from '@nestjs/config';
 import { EggService } from './egg/egg.service';
-import { tomoTestnet } from './chain/tomoTestnet';
+import { victionTestnet } from './chain/victionTesnet';
 
 @Injectable()
 export class AppService {
   private publicClient: PublicClient;
+  private readonly logger = new Logger(AppService.name);
   constructor(
     private configService: ConfigService,
     private eggService: EggService,
   ) {
     this.publicClient = createPublicClient({
-      chain: tomoTestnet,
-      transport: http(),
+      chain: victionTestnet,
+      transport: webSocket(),
     });
   }
 
@@ -36,6 +37,7 @@ export class AppService {
       },
       onLogs: (logs) => {
         const args = logs[0].args;
+        this.logger.log(`Egg #${args.tokenId} minted`);
         this.eggService.createEgg(args.tokenId.toString(), args.to);
       },
     });
