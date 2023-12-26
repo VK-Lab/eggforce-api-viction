@@ -1,5 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Address, createPublicClient, PublicClient, webSocket } from 'viem';
+import {
+  Address,
+  createPublicClient,
+  parseAbi,
+  PublicClient,
+  webSocket,
+} from 'viem';
 import { ConfigService } from '@nestjs/config';
 import { EggService } from './egg/egg.service';
 import { victionTestnet } from './chain/victionTesnet';
@@ -14,35 +20,27 @@ export class AppService {
   ) {
     this.publicClient = createPublicClient({
       chain: victionTestnet,
-      transport: webSocket('wss://ws-testnet.viction.xyz', {
-        retryCount: 10,
-        timeout: 60000,
-      }),
+      transport: webSocket(),
     });
   }
 
   watchMintEvent() {
-    this.publicClient.watchEvent({
+    this.publicClient.watchContractEvent({
       address: this.configService.get<string>(
         'NFT_CONTRACT_ADDRESS',
       ) as Address,
-      event: {
-        name: 'Transfer',
-        inputs: [
-          { type: 'address', indexed: true, name: 'from' },
-          { type: 'address', indexed: true, name: 'to' },
-          { type: 'uint256', indexed: true, name: 'tokenId' },
-        ],
-        type: 'event',
-        args: {
-          from: '0x0000000000000000000000000000000000000000',
-        },
-      },
+      abi: parseAbi([
+        'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
+      ]),
+      eventName: 'Transfer',
+      args: { from: '0x0000000000000000000000000000000000000000' },
       onLogs: (logs) => {
         const args = logs[0].args;
         this.logger.log(`Egg #${args.tokenId} minted`);
         this.eggService.createEgg(args.tokenId.toString(), args.to);
       },
+      poll: true,
+      pollingInterval: 500,
     });
   }
 }
