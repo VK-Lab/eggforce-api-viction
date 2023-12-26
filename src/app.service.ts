@@ -14,7 +14,10 @@ export class AppService {
   ) {
     this.publicClient = createPublicClient({
       chain: victionTestnet,
-      transport: webSocket(),
+      transport: webSocket('wss://ws-testnet.viction.xyz', {
+        retryCount: 10,
+        timeout: 60000,
+      }),
     });
   }
 
