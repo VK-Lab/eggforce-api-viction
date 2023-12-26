@@ -31,7 +31,7 @@
     "mongoose-long": "^0.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "viem": "^1.19.11"
+    "viem": "^1.21.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
